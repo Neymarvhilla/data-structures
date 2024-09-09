@@ -1,273 +1,154 @@
 #include <iostream>
-#include <vector>
-#include <list>
+
+/*
+ * What is a hash table
+ * Simply put, it is a data structure that is used with the technique of
+ * hashing. Where hashing is a technique where you take a collection of
+ * keys and put them through a 'hashing' function that converts them to
+ * an index where they can be stored in the table.
+ * */
 
 
-class Bubble_Sort{
-public:
-    void sort(std::vector<int> &my_vec) {
-        for (int i = 0; i < my_vec.size(); ++i) {
-            bool is_sorted = true;
-            for (int j = 0; j < my_vec.size() - 1; ++j) {
-                if (my_vec[j] > my_vec[j + 1]) {
-                    int temp = my_vec[j];
-                    my_vec[j] = my_vec[j + 1];
-                    my_vec[j + 1] = temp;
-                    is_sorted = false;
-                }
-                if (is_sorted) {
-                    return;
-                }
-            }
-        }
-    }
+
+template<typename T>
+class LinkedListNode {
 private:
-    void swap_values(std::vector<int> &my_vec, int index_1, int index_2) {
-        int temp = my_vec[index_1];
-        my_vec[index_1] = my_vec[index_2];
-        my_vec[index_2] = temp;
-    }
+    LinkedListNode *previous_node;
+    LinkedListNode *next_node;
+    T data;
+public:
+    LinkedListNode() : previous_node {nullptr}, next_node {nullptr} {};
+    T get_data_value() {return data;};
+    void set_data_value(T new_value) {data = new_value;};
+    LinkedListNode *get_previous_node() {return previous_node;};
+    LinkedListNode *get_next_node() {return next_node;};
+    void set_previous_node(LinkedListNode *new_previous_node) {previous_node = new_previous_node;};
+    void set_next_node(LinkedListNode *new_next_node) {next_node = new_next_node;}
 };
 
-
-class SelectionSort {
-public:
-    void sort(std::vector<int> &my_vec) {
-        for (int i = 0; i < my_vec.size(); ++i) {
-            int minimum_index = i;
-            for (int j = i; j < my_vec.size(); ++j) {
-                if (my_vec[j] < my_vec[minimum_index]) {
-                    minimum_index = j;
-                }
-            }
-            swap_values(my_vec, minimum_index, i);
-        }
-    }
+template<typename T>
+class LinkedList {
 private:
-    void swap_values(std::vector<int> &my_vec, int index1, int index2) {
-        int temp = my_vec[index1];
-        my_vec[index1] = my_vec[index2];
-        my_vec[index2] = temp;
-    }
-};
-
-class InsertionSort {
+    int key;
+    LinkedListNode<T> *head;
+    LinkedListNode<T> *tail;
+    int size;
 public:
-    void sort(std::vector<int> &vec) {
-        for (int i = 1; i < vec.size(); ++i) {
-            int current = vec[i];
-            int j = i - 1;
-            while (j >= 0 && vec[j] > current) {
-                vec[j + 1] = vec[j];
-                --j;
-            }
-            vec[j + 1] = current;
-        }
+    LinkedList() : head {nullptr}, tail {nullptr}, size {0} {};
+    LinkedListNode<T> *get_head() {return head;};
+    LinkedListNode<T> *get_tail() {return tail;};
+    void set_head(LinkedListNode<T> new_head) {head = new_head;};
+    void set_tail(LinkedListNode<T> new_tail) {tail = new_tail;};
+    int get_size() const {return this->size;};
+    void set_size(int new_size) {this->size = new_size;};
+    int get_key() const{
+        return key;
     }
-};
+    void set_key(int key_value) {
+        this->key = key_value;
+    }
 
-
-class mergeSort {
-public:
-    void sort(std::vector<int> &array) {
-        if (array.size() < 2) {
+    void append(T data_value) {
+        auto *new_node = new LinkedListNode<T>;
+        new_node->set_data_value(data_value);
+        if (size == 0) {
+            head = new_node;
+            tail = new_node;
+            size++;
             return;
         }
-        int middle = array.size() / 2;
-        std::vector<int> left (middle, 0);
-        for (int i = 0; i < middle; ++i) {
-            left[i] = array[i];
-        }
-
-        std::vector<int> right(array.size() - middle, 0);
-        for (int i = middle; i < array.size(); i++) {
-            right[i - middle] = array[i];
-        }
-
-        sort(left);
-        sort(right);
-
-        merge(left, right, array);
-    }
-
-private:
-    void merge(std::vector<int> &left, std::vector<int> &right, std::vector<int> &result) {
-        int i = 0, j = 0, k = 0;
-        while (i < left.size() && j < right.size()) {
-            if (left[i] <= right[j]) {
-                result[k++] = left[i++];
-            }
-            else {
-                result[k++] = right[j++];
-            }
-        }
-        while (i < left.size()) {
-            result[k++] = left[i++];
-        }
-
-        while (j < right.size()) {
-            result[k++] = right[j++];
-        }
-
-    }
-};
-
-class QuickSort {
-private:
-    void swap(std::vector<int> &array, int index1, int index2) {
-        int temp = array[index1];
-        array[index1] = array[index2];
-        array[index2] = temp;
-    }
-    int partition(std::vector<int> &array, int start, int end) {
-        int boundary = start - 1;
-        int pivot = array[end];
-
-        for (int i = start; i <= end; ++i) {
-            if (array[i] <= pivot) {
-                boundary++;
-                swap(array, i, boundary);
-            }
-        }
-        return boundary;
-    }
-public:
-    void sort(std::vector<int> &array, int start, int end) {
-        if (start >= end) {
+        if (size == 1) {
+            head->set_next_node(new_node);
+            new_node->set_previous_node(head);
+            tail = new_node;
+            size++;
             return;
         }
-        int boundary = partition(array, start, end);
-        // sort left
-        sort(array, start, boundary - 1 );
-        // sort right
-        sort(array, boundary + 1, end);
-        // partition
+
+        new_node->set_previous_node(tail);
+        tail->set_next_node(new_node);
+        tail = new_node;
+        size++;
     }
 
+    // I want it work like a dictionary / unordered map
+    // Hence, when the overloaded = operator is called we can create a node and set the value to the passed in integer
+    LinkedList &operator=(T data_value) {
+        auto *new_node = new LinkedListNode<T>;
+        new_node->set_data_value(data_value);
+        if (size == 0) {
+            head = new_node;
+            tail = new_node;
+            size++;
+            return *this;
+        }
+        if (size == 1) {
+            head->set_next_node(new_node);
+            new_node->set_previous_node(head);
+            tail = new_node;
+            size++;
+            return *this;
+        }
+
+        new_node->set_previous_node(tail);
+        tail->set_next_node(new_node);
+        tail = new_node;
+        size++;
+        return *this;
+    }
+    ~LinkedList() {
+        LinkedListNode<T> *destroy = head;
+        while (destroy != nullptr) {
+            destroy = destroy->get_next_node;
+            delete destroy->get_previous_node();
+        }
+    }
 };
 
-class CountingSort {
-public:
-    void sort(std::vector<int> array, int max) {
-        std::vector<int> counts(max + 1, 0);
-        for (auto &value : array) {
-            counts[value]++;
-        }
-        int k = 0;
-       for (int i = 0; i < counts.size(); ++i) {
-          for (int j = 0; j < counts[i]; ++j)
-              array[k++] = i;
-       }
-    }
-
-};
-
-class BucketSort {
-public:
-    void sort(std::vector<int> array, int no_of_buckets) {
-        //std::list<int> x;
-        std::list<std::list<int>> buckets(no_of_buckets);
-        for (auto &value : array) {
-
-        }
-
-    }
-};
-
-class SearchAlgorithms {
-public:
-    int LinearSearch(std::vector<int> array, int target) {
-        for (int i = 0; i < array.size(); ++i) {
-            if (array[i] == target)
-                return i;
-        }
-        return -1;
-    }
-
-    int BinarySearchRec(std::vector<int> &array, int target) {
-        return BinarySearchRec(array, target, 0, array.size() - 1);
-    }
-
-    int BinarySearch(std::vector<int> &array, int target) {
-        int left = 0;
-        int right = array.size();
-
-        while (left <= right) {
-            int middle = (left + right) / 2;
-
-            if (array[middle] == target) {
-                return middle;
-            }
-
-            if (array[middle] > target) {
-                right = middle - 1;
-            }
-            else if(array[middle] < target) {
-                left = middle + 1;
-            }
-        }
-        return -1;
-    }
-
-    int TernarySearch(std::vector<int> &array, int target) {
-        return TernarySearch(array, target, 0, array.size() - 1);
-    }
-
-
-    int ExponentialSearch(std::vector<int> array, int target, int bound) {
-        if (array[bound] == target) {
-            return bound;
-        }
-        if (array[bound] < target) {
-            ExponentialSearch(array, target, bound*2);
-        }
-        if (array[bound] > target) {
-            return BinarySearchRec(array, target, 0, bound);
-        }
-        return -1;
-    }
+// My Hashtable class
+// I want it to have a fixed size
+// I'm still unsure about making the hashing function a member function
+template<typename T = LinkedList<int> *>
+class Hash_Table{
 private:
-   int BinarySearchRec(std::vector<int> &array, int target, int left, int right) {
-        if (right < left) {
-            return -1;
+    int size {5}; // size has been set to five
+    T *my_array; // using an array for the behind the scenes implementation
+public:
+    // when the default constructors is called
+    // I want an array of pointers to LinkedList to be dynamically allocated on the heap or free store
+    // set the elements in the array to nullptr
+    Hash_Table() {
+        my_array = new T [size];
+        for (size_t i {0}; i < size; ++i) {
+            my_array[i] = nullptr;
         }
-        int middle = (left + right) / 2;
-        if (array[middle] == target) {
-            return middle;
-        }
-        if (target > array[middle]) {
-            return BinarySearchRec(array, target, left, middle - 1);
-        }
-        return BinarySearchRec(array, target, middle + 1, right);
+    }
+    // My hashing function
+    // The idea is that the key values would be integers
+    // the function takes the modulus of two
+    // the return value would be the index in which we will store the values in our hashtable
+    //
+    int hashing_function(int key_value) {
+        return key_value % size;
     }
 
-    int TernarySearch(std::vector<int> &array, int target, int left, int right) {
-        if (left > right) {
-            return -1;
+    LinkedList<T> &operator[](int key_value) {
+        // obtain the index value
+        // we do this by utilizing the hashing function we defined earlier
+        int index = hashing_function(key_value);
+        if (my_array[index] != nullptr) {
+            return *my_array[index];
         }
-        int partition_size = (right - left) / 3;
-        int mid1 = left + partition_size;
-        int mid2 = right - partition_size;
-
-        if (array[mid1] == target) {
-            return mid1;
+        // so we can use our overloaded assignment operator to add a new node using chaining
+        else {
+            my_array[index] = new LinkedList<T>;
+            return *my_array[index];
         }
-        if (array[mid2] == target) {
-            return mid2;
-        }
-        if (array[mid1] > target) {
-            return TernarySearch(array, target, left, mid1 - 1);
-        }
-        if (array[mid2] < target) {
-            return TernarySearch(array, target, mid2 + 1, right);
-        }
-        return TernarySearch(array, target, mid1 + 1, mid2 - 1);
     }
 };
+
 
 int main() {
     std::cout << "Hello, World!" << std::endl;
-
-
     return 0;
 }
